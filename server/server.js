@@ -1,9 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import connectDB from './config/db.js';
-import productsRouter from './routes/products.js';
-import cartRouter from './routes/cart.js';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import productsRouter from "./routes/products.js";
+import cartRouter from "./routes/cart.js";
 
 dotenv.config();
 
@@ -16,18 +16,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/products', productsRouter);
-app.use('/api/cart', cartRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/cart", cartRouter);
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Server is running" });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal server error' });
+  res.status(500).json({ message: "Internal server error" });
 });
 
 // Connect to MongoDB and start server
@@ -38,7 +38,7 @@ const startServer = async () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };

@@ -1,13 +1,15 @@
-import express from 'express';
-import Cart from '../models/Cart.js';
-import Product from '../models/Product.js';
+import express from "express";
+import Cart from "../models/Cart.js";
+import Product from "../models/Product.js";
 
 const router = express.Router();
 
 // GET cart by userId
-router.get('/:userId', async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.params.userId }).populate('items.productId');
+    const cart = await Cart.findOne({ userId: req.params.userId }).populate(
+      "items.productId",
+    );
     if (!cart) {
       return res.json({ userId: req.params.userId, items: [], totalPrice: 0 });
     }
@@ -18,9 +20,9 @@ router.get('/:userId', async (req, res) => {
 });
 
 // SAVE/UPDATE cart
-router.post('/:userId', async (req, res) => {
+router.post("/:userId", async (req, res) => {
   const { items } = req.body;
-  
+
   try {
     // Calculate total price
     let totalPrice = 0;
@@ -34,12 +36,12 @@ router.post('/:userId', async (req, res) => {
     }
 
     let cart = await Cart.findOne({ userId: req.params.userId });
-    
+
     if (!cart) {
       cart = new Cart({
         userId: req.params.userId,
         items: items || [],
-        totalPrice: totalPrice
+        totalPrice: totalPrice,
       });
     } else {
       cart.items = items || [];
@@ -47,7 +49,7 @@ router.post('/:userId', async (req, res) => {
     }
 
     const savedCart = await cart.save();
-    const populatedCart = await savedCart.populate('items.productId');
+    const populatedCart = await savedCart.populate("items.productId");
     res.json(populatedCart);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -55,20 +57,22 @@ router.post('/:userId', async (req, res) => {
 });
 
 // ADD item to cart
-router.post('/:userId/add', async (req, res) => {
+router.post("/:userId/add", async (req, res) => {
   const { productId, quantity } = req.body;
 
   try {
     let cart = await Cart.findOne({ userId: req.params.userId });
-    
+
     if (!cart) {
       cart = new Cart({
         userId: req.params.userId,
         items: [{ productId, quantity }],
       });
     } else {
-      const existingItem = cart.items.find(item => item.productId.toString() === productId);
-      
+      const existingItem = cart.items.find(
+        (item) => item.productId.toString() === productId,
+      );
+
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
@@ -87,7 +91,7 @@ router.post('/:userId/add', async (req, res) => {
     cart.totalPrice = totalPrice;
 
     const savedCart = await cart.save();
-    const populatedCart = await savedCart.populate('items.productId');
+    const populatedCart = await savedCart.populate("items.productId");
     res.json(populatedCart);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -95,15 +99,17 @@ router.post('/:userId/add', async (req, res) => {
 });
 
 // REMOVE item from cart
-router.delete('/:userId/item/:productId', async (req, res) => {
+router.delete("/:userId/item/:productId", async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: req.params.userId });
-    
+
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+      return res.status(404).json({ message: "Cart not found" });
     }
 
-    cart.items = cart.items.filter(item => item.productId.toString() !== req.params.productId);
+    cart.items = cart.items.filter(
+      (item) => item.productId.toString() !== req.params.productId,
+    );
 
     // Recalculate total price
     let totalPrice = 0;
@@ -116,7 +122,7 @@ router.delete('/:userId/item/:productId', async (req, res) => {
     cart.totalPrice = totalPrice;
 
     const savedCart = await cart.save();
-    const populatedCart = await savedCart.populate('items.productId');
+    const populatedCart = await savedCart.populate("items.productId");
     res.json(populatedCart);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -124,17 +130,17 @@ router.delete('/:userId/item/:productId', async (req, res) => {
 });
 
 // CLEAR cart
-router.delete('/:userId', async (req, res) => {
+router.delete("/:userId", async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: req.params.userId });
-    
+
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+      return res.status(404).json({ message: "Cart not found" });
     }
 
     cart.items = [];
     cart.totalPrice = 0;
-    
+
     const savedCart = await cart.save();
     res.json(savedCart);
   } catch (error) {
@@ -143,20 +149,22 @@ router.delete('/:userId', async (req, res) => {
 });
 
 // UPDATE item quantity in cart
-router.put('/:userId/item/:productId', async (req, res) => {
+router.put("/:userId/item/:productId", async (req, res) => {
   const { quantity } = req.body;
 
   try {
     const cart = await Cart.findOne({ userId: req.params.userId });
-    
+
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+      return res.status(404).json({ message: "Cart not found" });
     }
 
-    const item = cart.items.find(item => item.productId.toString() === req.params.productId);
-    
+    const item = cart.items.find(
+      (item) => item.productId.toString() === req.params.productId,
+    );
+
     if (!item) {
-      return res.status(404).json({ message: 'Item not found in cart' });
+      return res.status(404).json({ message: "Item not found in cart" });
     }
 
     item.quantity = quantity;
@@ -172,7 +180,7 @@ router.put('/:userId/item/:productId', async (req, res) => {
     cart.totalPrice = totalPrice;
 
     const savedCart = await cart.save();
-    const populatedCart = await savedCart.populate('items.productId');
+    const populatedCart = await savedCart.populate("items.productId");
     res.json(populatedCart);
   } catch (error) {
     res.status(400).json({ message: error.message });

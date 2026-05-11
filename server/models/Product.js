@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
@@ -9,13 +9,13 @@ const productSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, 'Please provide a product name'],
+      required: [true, "Please provide a product name"],
       trim: true,
     },
     price: {
       type: Number,
-      required: [true, 'Please provide a product price'],
-      min: [0, 'Price cannot be negative'],
+      required: [true, "Please provide a product price"],
+      min: [0, "Price cannot be negative"],
     },
     description: {
       type: String,
@@ -32,14 +32,14 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 0,
-      min: [0, 'Stock cannot be negative'],
+      min: [0, "Stock cannot be negative"],
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model("Product", productSchema);
 
 export default Product;
