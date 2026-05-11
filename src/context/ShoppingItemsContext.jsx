@@ -1,5 +1,6 @@
 ﻿import {createContext, useContext, useState, useEffect} from "react";
 import {demoProducts} from "../data/demoProducts";
+import * as apiService from "../services/api";
 
 const ShoppingItemsContext = createContext({});
 
@@ -13,17 +14,17 @@ export function ShoppingItemsProvider({children}) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Simulate API loading delay
         const loadProducts = async () => {
             try {
                 setIsLoadingProducts(true);
-                // Simulate network delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setProducts(demoProducts);
+                const dbProducts = await apiService.getProducts();
+                setProducts(dbProducts);
                 setError(null);
             } catch (err) {
-                setError("Failed to load products");
-                console.error("Error loading products:", err);
+                console.error("Error loading products from API:", err);
+                console.log("Falling back to demo products");
+                setProducts(demoProducts);
+                setError("Using demo data - backend may not be running");
             } finally {
                 setIsLoadingProducts(false);
             }
@@ -34,11 +35,12 @@ export function ShoppingItemsProvider({children}) {
 
     async function addProduct(product) {
         try {
-            const newProduct = {
-                ...product,
-                id: products.length + 1,
-                createdAt: new Date().toISOString()
-            };
+            const newProduct = await apiService.createProduct({
+                name: product.name,
+                price: parseFloat(product.price),
+                imageUrl: product.imgUrl,
+                description: product.description || ""
+            });
             setProducts(prevProducts => [...prevProducts, newProduct]);
             return newProduct;
         } catch (error) {
@@ -49,9 +51,15 @@ export function ShoppingItemsProvider({children}) {
 
     async function updateProduct(id, updatedProduct) {
         try {
+            const updated = await apiService.updateProduct(id, {
+                name: updatedProduct.name,
+                price: parseFloat(updatedProduct.price),
+                imageUrl: updatedProduct.imgUrl,
+                description: updatedProduct.description || ""
+            });
             setProducts(prevProducts =>
                 prevProducts.map(product =>
-                    product.id === id ? { ...product, ...updatedProduct } : product
+                    product._id === id ? updated : product
                 )
             );
         } catch (error) {
@@ -62,8 +70,9 @@ export function ShoppingItemsProvider({children}) {
 
     async function deleteProduct(id) {
         try {
+            await apiService.deleteProduct(id);
             setProducts(prevProducts =>
-                prevProducts.filter(product => product.id !== id)
+                prevProducts.filter(product => product._id !== id)
             );
         } catch (error) {
             console.error("Error deleting product:", error);

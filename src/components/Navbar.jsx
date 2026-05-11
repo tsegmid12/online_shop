@@ -1,5 +1,5 @@
 ﻿import { Container, Nav } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useShoppingCart } from "../context/ShoppingCartContext";
 import { ThemeToggle } from "./ThemeToggle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,14 +8,15 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 export function Navbar() {
-    const { openCart, cartQuantity } = useShoppingCart();
+    const { cartQuantity } = useShoppingCart();
+    const navigate = useNavigate();
 
     return (
         <nav className="navbar sticky-top">
             <Container className="d-flex justify-content-between align-items-center">
                 <NavLink to="/" className="navbar-brand">
-                    <img src="/imgs/logo.svg" alt="Logo" width="30" height="30" />TWS 
-                    <span className="text-primary text-color">DevOps Junoon</span>
+                    <img src="/imgs/logo.svg" alt="Logo" width="30" height="30" />AIC 
+                    <span className="text-primary text-color">AR in e-commerce</span>
                 </NavLink>
 
                 <div className="d-flex align-items-center gap-3">
@@ -29,7 +30,7 @@ export function Navbar() {
                     </Nav>
 
                     <div className="d-flex align-items-center gap-2">
-                        <a 
+                        {/* <a 
                             href="https://github.com/LondheShubham153/online_shop_hackathon" 
                             target="_blank" 
                             rel="noopener noreferrer"
@@ -46,9 +47,9 @@ export function Navbar() {
                             aria-label="Portfolio"
                         >
                             <FontAwesomeIcon icon={faUser} />
-                        </a>
+                        </a> */}
                         <ThemeToggle />
-                        <button className="cart-button" onClick={openCart}>
+                        <button className="cart-button" onClick={() => navigate("/cart")} title="View Cart">
                             <FontAwesomeIcon icon={faShoppingCart} />
                             {cartQuantity > 0 && (
                                 <span className="cart-count">{cartQuantity}</span>

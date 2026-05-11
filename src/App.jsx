@@ -2,10 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Navbar } from "./components/Navbar";
 import Store from "./pages/Store";
+import Cart from "./pages/Cart";
 import { ShoppingCartProvider } from "./context/ShoppingCartContext";
 import { ShoppingItemsProvider } from "./context/ShoppingItemsContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import { Footer } from "./components/Footer";
 import Admin from "./pages/Admin";
 import Checkout from "./pages/Checkout";
 import { ToastContainer } from "react-toastify";
@@ -21,11 +21,11 @@ export default function App() {
                         <Container className="mb-4 flex-grow-1">
                             <Routes>
                                 <Route path="/" element={<Store />} />
+                                <Route path="/cart" element={<Cart />} />
                                 <Route path="/admin" element={<Admin />} />
                                 <Route path="/checkout" element={<Checkout />} />
                             </Routes>
                         </Container>
-                        <Footer />
                         <ToastContainer 
                             position="top-right"
                             autoClose={3000}
